@@ -1,0 +1,29 @@
+{% extends 'layout.html' %}
+
+{% block body_block %}
+    {% include 'navbar.html' %}
+    {% include '_messages.html' %}
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-6" id='b_image'>
+                <img src="{{ url_for('static', filename='images/'+product.image_1) }}" alt="{{ product.name }}"
+                     width="400px">
+            </div>
+            <div class="col-md-6">
+                <h4>{{ product.name }}</h4>
+                <hr>
+                <h5>By: {{ product.brand.name }}</h5>
+                <p>Price: {{ product.price }}</p>
+                <strong>Description:</strong>
+                <p>{{ product.desc }}</p>
+                <hr>
+                <form action="{{ url_for('add_cart') }}" method="post">
+                    <input type="hidden" name="product_id" value="{{ product.id }}">
+                    <button type="submit" class="btn btn-sm btn-warning">Add to Cart</button>
+                    <label for="">Quantity</label>
+                    <input type="number" name="quantity" id='' value="1" min="1" max="{{ product.stock }}">
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock body_block %}

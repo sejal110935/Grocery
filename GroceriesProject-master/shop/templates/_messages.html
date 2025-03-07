@@ -1,0 +1,25 @@
+<!-- Include SweetAlert2 JavaScript -->
+<script src="sweetalert2.all.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    // Function to show SweetAlert2 messages
+    function showSweetAlert(category, message) {
+        Swal.fire({
+            icon: category,
+            title: message,
+            showConfirmButton: false,
+            timer: 3000 // Display for 3 seconds
+        });
+    }
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                showSweetAlert('{{ category }}', '{{ message }}');
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+</script>
+

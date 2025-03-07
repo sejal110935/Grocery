@@ -1,0 +1,103 @@
+{% extends 'layout.html' %}
+
+{% block body_block %}
+    {% include '_messages.html' %}
+    <div class="container-fluid p-0">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark" style="border-bottom: 2px solid #fff; padding: 0.2rem 1rem;">
+            <!-- ADMIN link placed at the leftmost of the navbar -->
+            <a class="navbar-brand text-light" href="/admin" style="padding-right: 5px;">ADMIN</a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown"
+                    aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNavDropdown">
+                <ul class="navbar-nav me-auto d-flex align-items-center">
+                    <li class="nav-item">
+                        <a class="btn btn-outline-light me-2" href="/admin">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="btn btn-outline-light me-2" href="/brands">Brands</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="btn btn-outline-light me-2" href="/categories">Categories</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="btn btn-outline-light me-2" href="/add/product">Product</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="btn btn-outline-light me-2" href="/replenish_stock">Replenish Stock</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav ms-auto d-flex align-items-center">
+                    {% if current_user.is_authenticated %}
+                        <li class="nav-item dropdown">
+                            <a class="btn btn-outline-light dropdown-toggle" href="#" id="profileDropdown" role="button"
+                               data-bs-toggle="dropdown" aria-expanded="false">
+                                Profile
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+                                <li>
+                                    <div class="dropdown-item text-center">
+                                        <img src="{{ url_for('static', filename='admin.jpg') }}" alt="Admin Picture"
+                                             class="rounded-circle mb-2" width="50" height="50">
+                                        <p class="mb-0"><strong>{{ current_user.username }}</strong></p>
+                                    </div>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <a class="dropdown-item text-danger" href="{{ url_for('logout', user_type=session['user_type']) }}">Logout</a>
+                                </li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="btn btn-outline-light me-2" href="{{ url_for('login', user_type='customer') }}">Login</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="btn btn-outline-light" href="{{ url_for('register', user_type='customer') }}">Sign In</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </nav>
+    </div>
+    <div class="container mt-5">
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped">
+                <caption>List of Available Products</caption>
+                <thead class="thead-light">
+                <tr>
+                    <th>Sr. No.</th>
+                    <th>Product</th>
+                    <th>Price</th>
+                    <th>Brand</th>
+                    <th>Image</th>
+                    <th>Edit</th>
+                    <th>Delete</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for product in products %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ product.name }}</td>
+                        <td>{{ product.price }}</td>
+                        <td>{{ product.brand.name }}</td>
+                        <td><img src="{{ url_for('static', filename='images/'+product.image_1) }}" width="100"
+                                 alt="Image_1"></td>
+                        <td><a href="{{ url_for('update_product', product_id=product.id) }}"
+                               class="btn btn-warning btn-sm">Edit</a></td>
+                        <td>
+                            <button type="button" class="btn btn-danger btn-sm delete-product"
+                                    data-product-id="{{ product.id }}" data-product-name="{{ product.name }}">
+                                Delete
+                            </button>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock body_block %}

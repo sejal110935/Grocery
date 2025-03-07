@@ -1,0 +1,230 @@
+{% extends 'layout.html' %}
+
+{% macro render_product_card(product) %}
+<div class="col-lg-3 col-md-4 col-sm-6 d-flex align-items-stretch">
+    <div class="product-card">
+        <!-- Brand Name as a Ribbon -->
+        <div class="product-card-header">
+            {{ product.brand.name }}
+        </div>
+
+        <!-- Product Image and Name -->
+        <div class="card-body" onclick="window.location.href = '{{ url_for('product_details', product_id=product.id) }}';" style="cursor: pointer;">
+            <img src="{{ url_for('static', filename='images/' + product.image_1) }}" alt="{{ product.name }}" />
+            <h5 class="text-center mt-3">{{ product.name }}</h5>
+        </div>
+
+        <!-- Price Ribbon -->
+        <div class="product-card-footer">
+            Price: {{ product.price }}
+        </div>
+
+        <!-- Quantity and Add to Cart -->
+        <div class="product-card-form">
+            <form action="{{ url_for('add_cart') }}" method="post">
+                <input type="number" name="quantity" value="1" min="1" max="{{ product.stock }}" aria-label="Quantity">
+                <button type="submit" class="btn btn-warning">Add to Cart</button>
+                <input type="hidden" name="product_id" value="{{ product.id }}">
+            </form>
+        </div>
+    </div>
+</div>
+{% endmacro %}
+
+
+{% block body_block %}
+    {% include 'navbar.html' %}
+    {% include '_messages.html' %}
+
+    <!-- Link to the stylesheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+
+    <div class="container">
+        <!-- Check if the current URL matches any category -->
+        {% set current_url = request.path %}
+
+        {% if current_url == url_for('get_entity', entity='category', entity_id=2) %}
+            <div class="banner text-center">
+                <h1>Dairy</h1>
+            </div>
+        {% elif current_url == url_for('get_entity', entity='category', entity_id=3) %}
+            <div class="banner text-center">
+                <h1>Vegetables</h1>
+            </div>
+        {% elif current_url == url_for('get_entity', entity='category', entity_id=4) %}
+            <div class="banner text-center">
+                <h1>Fruits</h1>
+            </div>
+        {% elif current_url == url_for('get_entity', entity='category', entity_id=5) %}
+            <div class="banner text-center">
+                <h1>Meat and Eggs</h1>
+            </div>
+        {% elif current_url == url_for('get_entity', entity='category', entity_id=6) %}
+            <div class="banner text-center">
+                <h1>Bread</h1>
+            </div>
+        {% elif current_url == url_for('get_entity', entity='category', entity_id=7) %}
+            <div class="banner text-center">
+                <h1>Grains and Pulses</h1>
+            </div>
+        {% else %}
+            <!-- Show the category grid only if no specific category page is being viewed -->
+            <div class="categories-grid">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h5 class="card-title">Dairy</h5>
+                        <p class="card-text">Fresh dairy products for your everyday needs.</p>
+                        <button class="btn btn-primary" onclick="window.location.href = '{{ url_for('get_entity', entity='category', entity_id=2) }}';">
+                            View Dairy
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h5 class="card-title">Vegetables</h5>
+                        <p class="card-text">Fresh and organic vegetables available.</p>
+                        <button class="btn btn-primary" onclick="window.location.href = '{{ url_for('get_entity', entity='category', entity_id=3) }}';">
+                            View Vegetables
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h5 class="card-title">Fruits</h5>
+                        <p class="card-text">Fresh fruits delivered straight to your door.</p>
+                        <button class="btn btn-primary" onclick="window.location.href = '{{ url_for('get_entity', entity='category', entity_id=4) }}';">
+                            View Fruits
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h5 class="card-title">Meat and Eggs</h5>
+                        <p class="card-text">Quality meat and fresh eggs for your meals.</p>
+                        <button class="btn btn-primary" onclick="window.location.href = '{{ url_for('get_entity', entity='category', entity_id=5) }}';">
+                            View Meat and Eggs
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h5 class="card-title">Bread</h5>
+                        <p class="card-text">Freshly baked bread for all your needs.</p>
+                        <button class="btn btn-primary" onclick="window.location.href = '{{ url_for('get_entity', entity='category', entity_id=6) }}';">
+                            View Bread
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h5 class="card-title">Grains and Pulses</h5>
+                        <p class="card-text">Wide variety of grains and pulses available.</p>
+                        <button class="btn btn-primary" onclick="window.location.href = '{{ url_for('get_entity', entity='category', entity_id=7) }}';">
+                            View Grains and Pulses
+                        </button>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+    <div class="container">
+        <div class="row mt-2">
+            {% if brand %}
+                {% for b in brand.items %}
+                    {{ render_product_card(b) }}
+                {% endfor %}
+                </div>
+                <div class="row text-center">
+                    <div class="col text-center mt-4">
+                        {% if brand.has_prev %}
+                            <a href="{{ url_for('get_entity', entity='brand', entity_id=get_brand.id, page=brand.prev_num) }}"
+                               class="btn btn-outline-info btn-sm"> Previous</a>
+                        {% endif %}
+                        {% for page_num in brand.iter_pages(left_edge=1, right_edge=2, left_current=1, right_current=2) %}
+                            {% if page_num %}
+                                {% if brand.page == page_num %}
+                                    <a href="{{ url_for('get_entity', entity='brand', entity_id=get_brand.id, page=page_num) }}"
+                                       class="btn btn-info btn-sm disabled"> {{ page_num }}</a>
+                                {% else %}
+                                    <a href="{{ url_for('get_entity', entity='brand', entity_id=get_brand.id, page=page_num) }}"
+                                       class="btn btn-outline-info btn-sm"> {{ page_num }}</a>
+                                {% endif %}
+                            {% else %}
+                                ...
+                            {% endif %}
+                        {% endfor %}
+                        {% if brand.has_next %}
+                            <a href="{{ url_for('get_entity', entity='brand', entity_id=get_brand.id, page=brand.next_num) }}"
+                               class="btn btn-outline-info btn-sm">Next</a>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="row mt-2">
+                    {% elif category %}
+                    {% for c in category.items %}
+                        {{ render_product_card(c) }}
+                    {% endfor %}
+                </div>
+                <div class="row text-center">
+                    <div class="col text-center mt-4">
+                        {% if category.has_prev %}
+                            <a href="{{ url_for('get_entity', entity='category', entity_id=get_cat.id, page=category.prev_num) }}"
+                               class="btn btn-outline-info btn-sm"> Previous</a>
+                        {% endif %}
+                        {% for page_num in category.iter_pages(left_edge=1, right_edge=2, left_current=1, right_current=2) %}
+                            {% if page_num %}
+                                {% if category.page == page_num %}
+                                    <a href="{{ url_for('get_entity', entity='category', entity_id=get_cat.id, page=page_num) }}"
+                                       class="btn btn-info btn-sm disabled"> {{ page_num }}</a>
+                                {% else %}
+                                    <a href="{{ url_for('get_entity', entity='category', entity_id=get_cat.id, page=page_num) }}"
+                                       class="btn btn-outline-info btn-sm"> {{ page_num }}</a>
+                                {% endif %}
+                            {% else %}
+                                ...
+                            {% endif %}
+                        {% endfor %}
+                        {% if category.has_next %}
+                            <a href="{{ url_for('get_entity', entity='category', entity_id=get_cat.id, page=category.next_num) }}"
+                               class="btn btn-outline-info btn-sm">Next</a>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="row mt-2">
+                    {% else %}
+                    {% for product in products.items %}
+                        {{ render_product_card(product) }}
+                    {% endfor %}
+                </div>
+                <div class="row text-center">
+                    <div class="col text-center mt-4">
+                        {% if products.has_prev %}
+                            <a href="{{ url_for('home', page=products.prev_num) }}" class="btn btn-outline-info btn-sm">
+                                Previous</a>
+                        {% endif %}
+                        {% for page_num in products.iter_pages(left_edge=1, right_edge=2, left_current=1, right_current=2) %}
+                            {% if page_num %}
+                                {% if products.page == page_num %}
+                                    <a href="{{ url_for('home', page=page_num) }}"
+                                       class="btn btn-info btn-sm disabled"> {{ page_num }}</a>
+                                {% else %}
+                                    <a href="{{ url_for('home', page=page_num) }}"
+                                       class="btn btn-outline-info btn-sm"> {{ page_num }}</a>
+                                {% endif %}
+                            {% else %}
+                                ...
+                            {% endif %}
+                        {% endfor %}
+                        {% if products.has_next %}
+                            <a href="{{ url_for('home', page=products.next_num) }}" class="btn btn-outline-info btn-sm">Next</a>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endif %}
+    </div>
+{% endblock body_block %}
